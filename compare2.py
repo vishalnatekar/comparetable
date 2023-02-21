@@ -1,31 +1,45 @@
 import oracledb
 
-# Set up the connections
-dsn1 = oracledb.makedsn(host='<your_host_1>', port='<your_port_1>', service_name='<your_service_name_1>')
-connection1 = oracledb.connect(user='<your_username_1>', password='<your_password_1>', dsn=dsn1)
+# Set up the connection details for the first database
+hostname1 = '<hostname>'
+port1 = '<port>'
+service_name1 = '<service_name>'
+username1 = '<username>'
+password1 = '<password>'
+dsn1 = f"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={hostname1})(PORT={port1}))(CONNECT_DATA=(SERVICE_NAME={service_name1})))"
 
-dsn2 = oracledb.makedsn(host='<your_host_2>', port='<your_port_2>', service_name='<your_service_name_2>')
-connection2 = oracledb.connect(user='<your_username_2>', password='<your_password_2>', dsn=dsn2)
+# Set up the connection details for the second database
+hostname2 = '<hostname>'
+port2 = '<port>'
+service_name2 = '<service_name>'
+username2 = '<username>'
+password2 = '<password>'
+dsn2 = f"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={hostname2})(PORT={port2}))(CONNECT_DATA=(SERVICE_NAME={service_name2})))"
 
-# Define the tables to compare
-table1 = 'schema1.table1'
-table2 = 'schema2.table2'
+# Establish the connection to the first database
+connection1 = oracledb.connect(user=username1, password=password1, dsn=dsn1)
+
+# Establish the connection to the second database
+connection2 = oracledb.connect(user=username2, password=password2, dsn=dsn2)
+
+# Define the table to compare
+table = '<your_schema>.<your_table>'
 
 # Get the data from the first table
 cursor1 = connection1.cursor()
-cursor1.execute(f'SELECT * FROM {table1}')
+cursor1.execute(f'SELECT * FROM {table}')
 data1 = cursor1.fetchall()
 
 # Get the data from the second table
 cursor2 = connection2.cursor()
-cursor2.execute(f'SELECT * FROM {table2}')
+cursor2.execute(f'SELECT * FROM {table}')
 data2 = cursor2.fetchall()
 
-# Compare the data from the two tables
-if data1 == data2:
-    print(f"The data in {table1} from database 1 and {table2} from database 2 is the same.")
-else:
-    print(f"The data in {table1} from database 1 and {table2} from database 2 is different.")
+# Compare the data in the two tables
+for i in range(len(data1)):
+    for j in range(len(data1[i])):
+        if data1[i][j] != data2[i][j]:
+            print(f"Row {i+1}, Column {j+1}: Database 1 value is {data1[i][j]}, Database 2 value is {data2[i][j]}")
 
 # Close the cursors and the connections
 cursor1.close()
